@@ -1,10 +1,12 @@
 const fs = require("fs");
 
+//Funciones a exportar
 module.exports = {
   readFile,
   writeFile,
 };
 
+//Leer la base de datos
 function readFile(name) {
   try {
     let data = fs.readFileSync(name, "utf8");
@@ -16,6 +18,7 @@ function readFile(name) {
   }
 }
 
+//Escribir en la base de datos
 function writeFile(name, data) {
   try {
     fs.writeFileSync(name, JSON.stringify(data));

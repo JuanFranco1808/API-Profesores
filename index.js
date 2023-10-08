@@ -2,7 +2,7 @@
 const express = require("express");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
-const Joi = require('joi');
+const Joi = require("joi");
 
 //Modulos internos/funciones importadas
 const { readFile, writeFile } = require("./src/files");
@@ -40,20 +40,6 @@ app.get("/teachers/:teacherID", (req, res) => {
 });
 
 //Crear un profesor
-/* app.post("/teachers", (req, res) => {
-  try {
-    const data = readFile(FILE_NAME);
-    const newTeacher = req.body;
-    newTeacher.id = uuidv4();
-    data.push(newTeacher);
-    writeFile(FILE_NAME, data);
-    res.json({ message: "El profesor fue creada con exito" });
-  } catch (error) {
-    console.error(error);
-    res.json({ message: "Error al crear el profesor" });
-  }
-}); */
-
 app.post("/teachers", (req, res) => {
   try {
     const data = readFile(FILE_NAME);
@@ -71,13 +57,10 @@ app.post("/teachers", (req, res) => {
     writeFile(FILE_NAME, data);
     res.json({ message: "El profesor fue creada con exito" });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.json({ message: "Error al crear el profesor" });
   }
 });
-
-
-
 
 //Actualizar la informacion de un profesor
 app.put("/teachers/:teacherID", (req, res) => {
@@ -90,9 +73,22 @@ app.put("/teachers/:teacherID", (req, res) => {
   }
   let teacher = teachers[teacherIndex];
   teacher = { ...teacher, ...req.body };
-  teachers[teacherIndex] = teacher;
-  writeFile(FILE_NAME, teachers);
-  res.json({ teacher: teacher });
+  try {
+    Joi.assert(teacher.name, Joi.string().min(1));
+    Joi.assert(teacher.lastname, Joi.string().min(1));
+    Joi.assert(teacher.age, Joi.number());
+    Joi.assert(teacher.gender, Joi.string().min(1).max(1));
+    Joi.assert(teacher.subject, Joi.array().items(Joi.string()));
+    Joi.assert(teacher.active, Joi.boolean());
+    Joi.assert(teacher.institution, Joi.string().min(1));
+    Joi.assert(teacher.titles, Joi.array().items(Joi.string()));
+    teachers[teacherIndex] = teacher;
+    writeFile(FILE_NAME, teachers);
+    res.json({ teacher: teacher });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "Error al actualizar la información" });
+  }
 });
 
 //Eliminar un profesor

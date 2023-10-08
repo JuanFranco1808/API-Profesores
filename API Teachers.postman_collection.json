@@ -81,7 +81,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"gender\": \"Hombre\"\r\n}",
+					"raw": "{\r\n    \"gender\": \"H\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
