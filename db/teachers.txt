@@ -1,0 +1,1 @@
+[{"name":"Juan","lastName":"Franco","age":35,"gender":"H","subject ":["Matematicas","Ingles","Sistemas"],"active":true,"institution":"INEM","titles":["Ingeniero informatico","Matematico"],"id":"f71af384-8e0a-4ea1-87e8-9327bf16aead"}]
