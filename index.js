@@ -1,4 +1,5 @@
 //Librerias externas
+require("dotenv").config();
 const express = require("express");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
@@ -10,13 +11,15 @@ const { readFile, writeFile } = require("./src/files");
 //Variables globales
 const app = express();
 const FILE_NAME = "./db/teachers.txt";
+const PORT = process.env.PORT;
+const APP_NAME = process.env.APP_NAME;
 
 //Middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 //Funciones de prueba
-app.get("/hola", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hola mundo");
 });
 
@@ -106,6 +109,6 @@ app.delete("/teachers/:teacherID", (req, res) => {
 });
 
 //Puerto de enlace
-app.listen(4004, () => {
-  console.log("server is running on http://localhost:4004");
+app.listen(PORT, () => {
+  console.log(`${APP_NAME} is running on http://localhost:${PORT}`);
 });
