@@ -1,0 +1,60 @@
+<%-include("../layouts/header", { title: "Teachers List" }); -%>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="alert alert-success text-center">Lista de profesores</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellidos</th>
+            <th scope="col">Edad</th>
+            <th scope="col">Genero</th>
+            <th scope="col">Materias</th>
+            <th scope="col">Activo</th>
+            <th scope="col">Institución</th>
+            <th scope="col">Titulos</th>
+            <th scope="col">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% teachers.map(teacher => { %>
+          <tr>
+            <th scope="row"><%= count++ %></th>
+            <td><%= teacher.name %></td>
+            <td><%= teacher.lastName %></td>
+            <td><%= teacher.age %></td>
+            <td><%= teacher.gender %></td>
+            <td><%= teacher.subject %></td>
+            <td><%= teacher.active == "true" ? "✔" : "❌" %></td>
+            <td><%= teacher.institution %></td>
+            <td><%= teacher.titles %></td>
+            <td>
+              <form
+                action="teachers/delete/<%= teacher.id %>"
+                method="post"
+                onsubmit="return confirm('¿Esta seguro que quiere eliminar el profesor?')"
+              >
+                <button type="submit" class="btn btn-outline-danger">
+                  Eliminar
+                </button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 d-grid">
+      <a href="/teachers/create" class="btn btn-outline-dark">Añadir un profesor</a>
+    </div>
+  </div>
+</div>
+<%-include("../layouts/footer"); -%>

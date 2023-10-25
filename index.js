@@ -18,20 +18,76 @@ const APP_NAME = process.env.APP_NAME;
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//Motor de plantillas EJS
+app.set("views", "./src/views");
+app.set("view engine", "ejs");
+
 //Funciones de prueba
 app.get("/", (req, res) => {
   res.send("Hola mundo");
 });
 
+//Vistas API
+//Listado profesores
+app.get("/teachers", (req, res) => {
+  const data = readFile(FILE_NAME);
+  res.render("teachers/list", { teachers: data, count: 1 });
+});
+
+//Eliminar profesor por ID
+app.post("/teachers/delete/:id", (req, res) => {
+  const id = req.params.id;
+  const teachers = readFile(FILE_NAME);
+  const teacherIndex = teachers.findIndex((teachers) => teachers.id == id);
+  if (teacherIndex < 0) {
+    res.status(404).json({ ok: false, message: "Teacher not found" });
+    return;
+  }
+  teachers.splice(teacherIndex, 1);
+  writeFile(FILE_NAME, teachers);
+  res.redirect("/teachers");
+});
+
+//Formulario crear profesores
+app.get("/teachers/create", (req, res) => {
+  res.render("teachers/create");
+});
+
+//Crear profesor y guardarlo
+app.post("/teachers", (req, res) => {
+  try {
+    const data = readFile(FILE_NAME);
+    const newTeacher = req.body;
+    newTeacher.id = uuidv4();
+    Joi.assert(newTeacher.name, Joi.string().min(1));
+    Joi.assert(newTeacher.lastname, Joi.string().min(1));
+    Joi.assert(newTeacher.age, Joi.number());
+    Joi.assert(newTeacher.gender, Joi.string().min(1).max(1));
+    Joi.assert(newTeacher.subject, Joi.string().min(1));
+    Joi.assert(newTeacher.active, Joi.string().min(1));
+    Joi.assert(newTeacher.institution, Joi.string().min(1));
+    Joi.assert(newTeacher.titles, Joi.string().min(1));
+    console.log(newTeacher);
+    data.push(newTeacher);
+    writeFile(FILE_NAME, data);
+    res.redirect("/teachers")
+  } catch (error) {
+    console.error(error);
+    res.json({ message: "Error al crear el profesor" });
+  }
+});
+
+
+
 //FUNCIONES CRUD API
 //Obtener todo el listado de profesores
-app.get("/teachers", (req, res) => {
+app.get("/API/teachers", (req, res) => {
   const data = readFile(FILE_NAME);
   res.send(data);
 });
 
 //Obtener un profesor por ID
-app.get("/teachers/:teacherID", (req, res) => {
+app.get("/API/teachers/:teacherID", (req, res) => {
   const id = req.params.teacherID;
   const teachers = readFile(FILE_NAME);
   const teacherFound = teachers.find((teachers) => teachers.id == id);
@@ -43,7 +99,7 @@ app.get("/teachers/:teacherID", (req, res) => {
 });
 
 //Crear un profesor
-app.post("/teachers", (req, res) => {
+app.post("/API/teachers", (req, res) => {
   try {
     const data = readFile(FILE_NAME);
     const newTeacher = req.body;
@@ -52,10 +108,10 @@ app.post("/teachers", (req, res) => {
     Joi.assert(newTeacher.lastname, Joi.string().min(1));
     Joi.assert(newTeacher.age, Joi.number());
     Joi.assert(newTeacher.gender, Joi.string().min(1).max(1));
-    Joi.assert(newTeacher.subject, Joi.array().items(Joi.string()));
+    Joi.assert(newTeacher.subject, Joi.string().min(1));
     Joi.assert(newTeacher.active, Joi.boolean());
     Joi.assert(newTeacher.institution, Joi.string().min(1));
-    Joi.assert(newTeacher.titles, Joi.array().items(Joi.string()));
+    Joi.assert(newTeacher.titles, Joi.string().min(1));
     data.push(newTeacher);
     writeFile(FILE_NAME, data);
     res.json({ message: "El profesor fue creada con exito" });
@@ -66,7 +122,7 @@ app.post("/teachers", (req, res) => {
 });
 
 //Actualizar la informacion de un profesor
-app.put("/teachers/:teacherID", (req, res) => {
+app.put("/API/teachers/:teacherID", (req, res) => {
   const id = req.params.teacherID;
   const teachers = readFile(FILE_NAME);
   const teacherIndex = teachers.findIndex((teachers) => teachers.id == id);
@@ -81,10 +137,10 @@ app.put("/teachers/:teacherID", (req, res) => {
     Joi.assert(teacher.lastname, Joi.string().min(1));
     Joi.assert(teacher.age, Joi.number());
     Joi.assert(teacher.gender, Joi.string().min(1).max(1));
-    Joi.assert(teacher.subject, Joi.array().items(Joi.string()));
+    Joi.assert(teacher.subject, Joi.string().min(1));
     Joi.assert(teacher.active, Joi.boolean());
     Joi.assert(teacher.institution, Joi.string().min(1));
-    Joi.assert(teacher.titles, Joi.array().items(Joi.string()));
+    Joi.assert(teacher.titles, Joi.string().min(1));
     teachers[teacherIndex] = teacher;
     writeFile(FILE_NAME, teachers);
     res.json({ teacher: teacher });
@@ -95,7 +151,7 @@ app.put("/teachers/:teacherID", (req, res) => {
 });
 
 //Eliminar un profesor
-app.delete("/teachers/:teacherID", (req, res) => {
+app.delete("/API/teachers/:teacherID", (req, res) => {
   const id = req.params.teacherID;
   const teachers = readFile(FILE_NAME);
   const teacherIndex = teachers.findIndex((teachers) => teachers.id == id);
