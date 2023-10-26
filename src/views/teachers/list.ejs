@@ -20,6 +20,7 @@
             <th scope="col">Institución</th>
             <th scope="col">Titulos</th>
             <th scope="col">Eliminar</th>
+            <th scope="col">Descargar</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +46,16 @@
                 </button>
               </form>
             </td>
+            <td>
+              <form
+                action="teachers/download/<%= teacher.id %>"
+                method="post"
+              >
+                <button type="submit" class="btn btn-outline-primary">
+                  Descargar
+                </button>
+              </form>
+            </td>
           </tr>
           <% }) %>
         </tbody>
@@ -53,7 +64,29 @@
   </div>
   <div class="row">
     <div class="col-12 d-grid">
-      <a href="/teachers/create" class="btn btn-outline-dark">Añadir un profesor</a>
+      <a href="/teachers/create" class="btn btn-outline-dark"
+        >Añadir un profesor</a
+      >
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <form action="/teachers" method="get">
+        <div class="mt-3 mb-3">
+          <label for="newFilter" class="form-label">Filtrar profesores</label>
+          <input
+            type="text"
+            class="form-control border border-dark-subtle"
+            name="newFilter"
+            id="newFilter"
+          />
+          <div id="filterHelp" class="form-text">
+            Filtrar los profesores por su Materias<br>
+            (No funciona la busqueda por input)
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+      </form>
     </div>
   </div>
 </div>
