@@ -13,7 +13,7 @@ const { readFile, writeFile } = require("./src/files");
 //Variables globales
 const app = express();
 const FILE_NAME = "./db/teachers.txt";
-const FILE_NAME_DB2 = "./db/acess.txt";
+const FILE_NAME_DB2 = "./db/access.txt";
 const PORT = process.env.PORT;
 const APP_NAME = process.env.APP_NAME;
 
@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
   //acces.txt
   const DB2 = readFile(FILE_NAME_DB2);
   const newDate =
-    moment().tz("America/Bogota").format() + " GET" + " Prueba" + " /";
+    moment().tz("America/Bogota").format() + ` ${req.method}` + " Prueba" + ` ${req.path}`;
   console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
@@ -43,17 +43,17 @@ app.get("/", (req, res) => {
 app.get("/teachers", (req, res) => {
   const filter = req.query.subject;
   let data = readFile(FILE_NAME);
-  if (filter != undefined) {
-    data = data.filter((data) => data.subject.includes(filter));
+  if (filter) {
+    data = data.filter((data) => data.subject.toLowerCase().includes(filter.toLowerCase()));
   }
-  res.render("teachers/list", { teachers: data, count: 1 });
+  res.render("teachers/list", { teachers: data, count: 1, filter: filter });
   //acces.txt
   const DB2 = readFile(FILE_NAME_DB2);
   const newDate =
     moment().tz("America/Bogota").format() +
-    " GET" +
+    ` ${req.method}` +
     " ListadoProfesores" +
-    " /teachers";
+    ` ${req.path}`;
   console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
@@ -75,9 +75,9 @@ app.post("/teachers/delete/:id", (req, res) => {
   const DB2 = readFile(FILE_NAME_DB2);
   const newDate =
     moment().tz("America/Bogota").format() +
-    " POST" +
+    ` ${req.method}`  +
     " EliminarProfesor" +
-    ` /teachers/delete/${id}`;
+    ` ${req.path}`;
   console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
@@ -92,9 +92,9 @@ app.get("/teachers/create", (req, res) => {
   const DB2 = readFile(FILE_NAME_DB2);
   const newDate =
     moment().tz("America/Bogota").format() +
-    " GET" +
+    ` ${req.method}` +
     " FormCrearProfesor" +
-    " /teachers/create";
+    ` ${req.path}`;
   console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
@@ -127,9 +127,9 @@ app.post("/teachers", (req, res) => {
   const DB2 = readFile(FILE_NAME_DB2);
   const newDate =
     moment().tz("America/Bogota").format() +
-    " POST" +
+    ` ${req.method}` +
     " CrearProfesor" +
-    " /teachers";
+    ` ${req.path}`;
   console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
@@ -147,7 +147,7 @@ app.post("/teachers/download/:id", (req, res) => {
   }
   teachers = teachers.filter((teachers) => teachers.id == id);
   teachers = JSON.stringify(teachers, null, 2);
-  teachers = `<p>${teachers}<p>`
+  teachers = `<p>${teachers}<p>`;
   pdf.create(teachers, JSON).toFile(`./Profesor.pdf`, function (err, res) {
     if (err) {
       console.log(err);
@@ -159,9 +159,9 @@ app.post("/teachers/download/:id", (req, res) => {
   const DB2 = readFile(FILE_NAME_DB2);
   const newDate =
     moment().tz("America/Bogota").format() +
-    " POST" +
+    ` ${req.method}` +
     " DescargarProfesor" +
-    ` /teachers/download/${id}`;
+    ` ${req.path}`;
   console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);

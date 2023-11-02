@@ -73,16 +73,16 @@
     <div class="col-6">
       <form action="/teachers" method="get">
         <div class="mt-3 mb-3">
-          <label for="newFilter" class="form-label">Filtrar profesores</label>
+          <label for="subject" class="form-label">Filtrar profesores</label>
           <input
             type="text"
             class="form-control border border-dark-subtle"
-            name="newFilter"
-            id="newFilter"
+            name="subject"
+            id="subject"
+            value="<%= filter  %>"
           />
           <div id="filterHelp" class="form-text">
-            Filtrar los profesores por su Materias<br>
-            (No funciona la busqueda por input)
+            <p>Filtrar los profesores por sus Materias</p>
           </div>
         </div>
         <button type="submit" class="btn btn-outline-primary">Filtrar</button>
