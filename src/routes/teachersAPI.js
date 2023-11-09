@@ -30,7 +30,6 @@ router.get("/", (req, res) => {
     ` ${req.method}` +
     " APIListadoProfesores" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
@@ -53,7 +52,6 @@ router.get("/:teacherID", (req, res) => {
     ` ${req.method}` +
     " APIProfesorPorId" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
@@ -87,7 +85,6 @@ router.post("/", (req, res) => {
     ` ${req.method}` +
     " APICrearProfesor" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
@@ -127,7 +124,6 @@ router.put("/:teacherID", (req, res) => {
     ` ${req.method}` +
     " APIActualizarProfesor" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
@@ -152,7 +148,6 @@ router.delete("/:teacherID", (req, res) => {
     ` ${req.method}` +
     " APIEliminarProfesor" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt

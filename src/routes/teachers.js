@@ -8,6 +8,7 @@ const pdf = require("html-pdf");
 
 //Modulos internos/funciones importadas
 const { readFile, writeFile } = require("../files");
+const { models } = require("../libs/sequelize");
 
 //Variables globales
 const FILE_NAME = "./db/teachers.txt";
@@ -15,13 +16,26 @@ const FILE_NAME_DB2 = "./db/access.txt";
 
 //Vistas API
 //Listado profesores
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   const filter = req.query.subject;
-  let data = readFile(FILE_NAME);
-  if (filter) {
+  //let data = readFile(FILE_NAME);
+  /* if (filter) {
     data = data.filter((data) =>
       data.subject.toLowerCase().includes(filter.toLowerCase())
     );
+  } */
+
+  //CONSULTA CRUDA CON SEQUELIZE
+  /* const [data, metadata] = await sequelize.query("SELECT * FROM teachers");
+  console.log("Pets: ", data);
+  console.log("Metadata: ", metadata); */
+
+  //CONSULTA CON SEQUELIZE
+  let data = await models.teacher.findAll();
+  if (filter) {
+    data = await models.teacher.findAll({
+      where: { subject: filter },
+    });
   }
   res.render("teachers/list", { teachers: data, count: 1, filter: filter });
   //acces.txt
@@ -31,7 +45,6 @@ router.get("/", (req, res) => {
     ` ${req.method}` +
     " ListadoProfesores" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
@@ -40,14 +53,19 @@ router.get("/", (req, res) => {
 //Eliminar profesor por ID
 router.post("/delete/:id", (req, res) => {
   const id = req.params.id;
-  const teachers = readFile(FILE_NAME);
+  /* const teachers = readFile(FILE_NAME);
   const teacherIndex = teachers.findIndex((teachers) => teachers.id == id);
   if (teacherIndex < 0) {
     res.status(404).json({ ok: false, message: "Teacher not found" });
     return;
   }
   teachers.splice(teacherIndex, 1);
-  writeFile(FILE_NAME, teachers);
+  writeFile(FILE_NAME, teachers); */
+  models.teacher.destroy({
+    where: {
+      id: id,
+    },
+  });
   //acces.txt
   const DB2 = readFile(FILE_NAME_DB2);
   const newDate =
@@ -55,7 +73,6 @@ router.post("/delete/:id", (req, res) => {
     ` ${req.method}` +
     " EliminarProfesor" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
@@ -72,16 +89,15 @@ router.get("/create", (req, res) => {
     ` ${req.method}` +
     " FormCrearProfesor" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
 });
 
 //Crear profesor y guardarlo
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const data = readFile(FILE_NAME);
+    /* const data = readFile(FILE_NAME);
     const newTeacher = req.body;
     newTeacher.id = uuidv4();
     Joi.assert(newTeacher.name, Joi.string().min(1));
@@ -94,7 +110,8 @@ router.post("/", (req, res) => {
     Joi.assert(newTeacher.titles, Joi.string().min(1));
     console.log(newTeacher);
     data.push(newTeacher);
-    writeFile(FILE_NAME, data);
+    writeFile(FILE_NAME, data); */
+    const newTeacher = await models.teacher.create(req.body);
     res.redirect("/teachers");
   } catch (error) {
     console.error(error);
@@ -107,7 +124,6 @@ router.post("/", (req, res) => {
     ` ${req.method}` +
     " CrearProfesor" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
@@ -139,7 +155,6 @@ router.post("/download/:id", (req, res) => {
     ` ${req.method}` +
     " DescargarProfesor" +
     ` ${req.path}`;
-  console.log(newDate);
   DB2.push(newDate);
   writeFile(FILE_NAME_DB2, DB2);
   //access.txt
