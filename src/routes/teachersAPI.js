@@ -7,6 +7,7 @@ const moment = require("moment-timezone");
 
 //Modulos internos/funciones importadas
 const { readFile, writeFile } = require("../files");
+const { models } = require("../libs/sequelize");
 
 //Variables globales
 const FILE_NAME = "./db/teachers.txt";
@@ -14,13 +15,19 @@ const FILE_NAME_DB2 = "./db/access.txt";
 
 //RUTAS API
 //Obtener todo el listado de profesores
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   const filter = req.query.subject;
-  let data = readFile(FILE_NAME);
+  /* let data = readFile(FILE_NAME);
   if (filter) {
     data = data.filter((data) =>
       data.subject.toLowerCase().includes(filter.toLowerCase())
     );
+  } */
+  let data = await models.teacher.findAll();
+  if (filter) {
+    data = await models.teacher.findAll({
+      where: { subject: filter },
+    });
   }
   res.send(data);
   //acces.txt
@@ -36,14 +43,20 @@ router.get("/", (req, res) => {
 });
 
 //Obtener un profesor por ID
-router.get("/:teacherID", (req, res) => {
+router.get("/:teacherID", async (req, res) => {
   const id = req.params.teacherID;
-  const teachers = readFile(FILE_NAME);
+  /* const teachers = readFile(FILE_NAME);
   const teacherFound = teachers.find((teachers) => teachers.id == id);
   if (!teacherFound) {
     res.status(404).json({ message: "No se encuentra el profesor" });
     return;
-  }
+  } */
+  //CONSULTA CON SEQUELIZE
+  let teacherFound = await models.teacher.findAll({
+    where: {
+      id: id,
+    },
+  });
   res.json({ teacher: teacherFound });
   //acces.txt
   const DB2 = readFile(FILE_NAME_DB2);
@@ -58,9 +71,9 @@ router.get("/:teacherID", (req, res) => {
 });
 
 //Crear un profesor
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const data = readFile(FILE_NAME);
+    /* const data = readFile(FILE_NAME);
     const newTeacher = req.body;
     newTeacher.id = uuidv4();
     Joi.assert(newTeacher.name, Joi.string().min(1));
@@ -72,7 +85,9 @@ router.post("/", (req, res) => {
     Joi.assert(newTeacher.institution, Joi.string().min(1));
     Joi.assert(newTeacher.titles, Joi.string().min(1));
     data.push(newTeacher);
-    writeFile(FILE_NAME, data);
+    writeFile(FILE_NAME, data); */
+
+    const newTeacher = await models.teacher.create(req.body);
     res.json({ message: "El profesor fue creada con exito" });
   } catch (error) {
     console.log(error);
@@ -132,14 +147,20 @@ router.put("/:teacherID", (req, res) => {
 //Eliminar un profesor
 router.delete("/:teacherID", (req, res) => {
   const id = req.params.teacherID;
-  const teachers = readFile(FILE_NAME);
+  /* const teachers = readFile(FILE_NAME);
   const teacherIndex = teachers.findIndex((teachers) => teachers.id == id);
   if (teacherIndex < 0) {
     res.status(404).json({ message: "No se encuentra el profesor" });
     return;
   }
   teachers.splice(teacherIndex, 1);
-  writeFile(FILE_NAME, teachers);
+  writeFile(FILE_NAME, teachers); */
+
+  models.teacher.destroy({
+    where: {
+      id: id,
+    },
+  });
   res.json({ message: "Profesor eliminado" });
   //acces.txt
   const DB2 = readFile(FILE_NAME_DB2);
