@@ -7,6 +7,7 @@ const moment = require("moment-timezone");
 const { readFile, writeFile } = require("./src/files");
 const teachersAPI = require("./src/routes/teachersAPI.js");
 const teachers = require("./src/routes/teachers.js");
+const authRouter = require("./src/routes/users.routes.js");
 
 //Variables globales
 const app = express();
@@ -17,10 +18,25 @@ const APP_NAME = process.env.APP_NAME;
 //Middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(require("cookie-parser")());
+app.use(require("body-parser").urlencoded({ extended: true }));
+app.use(
+  require("express-session")({
+    secret: "Ingenieria informatica web 2",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+require("./src/config/passport")(app);
 
 //Motor de plantillas EJS
 app.set("views", "./src/views");
 app.set("view engine", "ejs");
+
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
 
 //Funciones de prueba
 app.get("/", (req, res) => {
@@ -43,6 +59,9 @@ app.use("/teachers", teachers);
 
 //Rutas API
 app.use("/API/teachers", teachersAPI);
+
+//Rutas auth
+app.use("/auth", authRouter);
 
 //Puerto de enlace
 app.listen(PORT, () => {

@@ -14,9 +14,18 @@ const { models } = require("../libs/sequelize");
 const FILE_NAME = "./db/teachers.txt";
 const FILE_NAME_DB2 = "./db/access.txt";
 
+router.use((req, res, next) => {
+  if (req.user) {
+    next();
+  } else {
+    res.redirect("/auth/signin");
+  }
+});
+
 //Vistas API
 //Listado profesores
 router.get("/", async (req, res) => {
+  console.log(req.user);
   const filter = req.query.subject;
   //let data = readFile(FILE_NAME);
   /* if (filter) {

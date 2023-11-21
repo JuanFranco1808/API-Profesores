@@ -10,4 +10,7 @@ const sequelize = new Sequelize(process.env.DATABASE, process.env.DB_USER, proce
 
 setUpModels(sequelize);
 
+//Sincornizar. No usar en entornos productivos
+//sequelize.sync(); 
+
 module.exports = sequelize;
