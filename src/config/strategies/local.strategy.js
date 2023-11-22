@@ -10,7 +10,7 @@ passport.use(
       passwordField: "password",
     },
     async (username, password, done) => {
-      const user = await models.User.findOne({ where: { username, password } });
+      const user = await models.user.findOne({ where: { username, password } });
       if (!user) {
         return done(null, false, {
           message: "Usuario o contraseña incorrectos",
